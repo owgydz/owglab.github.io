@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Networking Lab</title>
+  <link rel="../../Woah.css">
+</head>
+<body>
+
+<div class="container">
+
+  <div class="panel header">
+    <h1>Networking Experiments</h1>
+    <a href="../../index.html">← Back</a>
+  </div>
+
+  <div class="panel">
+    <h2>Packet Flow Visualizer</h2>
+    <canvas id="netCanvas" width="600" height="300"></canvas>
+  </div>
+
+  <div class="panel">
+    <h2>Ping Simulator</h2>
+    <button onclick="simulatePing()">Ping Server</button>
+    <p id="pingResult">Latency: -- ms</p>
+  </div>
+
+</div>
+
+<script>
+const canvas = document.getElementById("netCanvas");
+const ctx = canvas.getContext("2d");
+
+let packets = [];
+
+function spawnPacket() {
+  packets.push({
+    x: 0,
+    y: 150,
+    speed: 2 + Math.random() * 3
+  });
+}
+
+setInterval(spawnPacket, 500);
+
+function animate() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  ctx.fillStyle = "#00f0ff";
+
+  packets.forEach(p => {
+    ctx.fillRect(p.x, p.y, 10, 4);
+    p.x += p.speed;
+  });
+
+  packets = packets.filter(p => p.x < canvas.width);
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+
+function simulatePing() {
+  const latency = Math.floor(10 + Math.random() * 200);
+  document.getElementById("pingResult").innerText =
+    "Latency: " + latency + " ms";
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Weird Buttons</title>
+  <link rel="../../Woah.css">
+</head>
+<body>
+
+<div class="container">
+
+  <div class="panel header">
+    <h1>Weird Buttons</h1>
+    <a href="../../index.html">← Back</a>
+  </div>
+
+  <div class="panel">
+    <button onclick="duplicate(this)">Duplicate</button>
+    <button onmouseover="runAway(this)">Run Away</button>
+    <button onclick="spinPage()">Spin Page</button>
+  </div>
+
+</div>
+
+<script>
+function duplicate(btn) {
+  const clone = btn.cloneNode(true);
+  clone.style.position = "absolute";
+  clone.style.left = Math.random() * window.innerWidth + "px";
+  clone.style.top = Math.random() * window.innerHeight + "px";
+  document.body.appendChild(clone);
+}
+
+function runAway(btn) {
+  btn.style.position = "absolute";
+  btn.style.left = Math.random() * window.innerWidth + "px";
+  btn.style.top = Math.random() * window.innerHeight + "px";
+}
+
+function spinPage() {
+  document.body.style.transition = "transform 1s";
+  document.body.style.transform = "rotate(360deg)";
+  setTimeout(() => {
+    document.body.style.transform = "rotate(0deg)";
+  }, 1000);
+}
+</script>
+
+</body>
+</html>

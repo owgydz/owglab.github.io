@@ -1,0 +1,38 @@
+.browser {
+  border: 1px solid var(--accent-soft);
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+.browser-tabs {
+  display: flex;
+  background: var(--panel);
+  border-bottom: 1px solid var(--accent-soft);
+}
+
+.browser-tabs div {
+  padding: 6px 12px;
+  cursor: pointer;
+  border-right: 1px solid var(--accent-soft);
+}
+
+.browser-tabs div.active {
+  background: var(--accent-soft);
+}
+
+.browser-bar {
+  display: flex;
+  gap: 10px;
+  padding: 6px;
+  background: var(--panel);
+}
+
+.browser-bar input {
+  flex: 1;
+}
+
+iframe {
+  flex: 1;
+  border: none;
+}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>UI Stress Tests</title>
+  <link rel="../../Woah.css">
+</head>
+<body>
+
+<div class="container">
+
+  <div class="panel header">
+    <h1>UI Stress Tests</h1>
+    <a href="../../index.html">← Back</a>
+  </div>
+
+  <div class="panel">
+    <h2>100 Button Grid</h2>
+    <div id="grid"></div>
+  </div>
+
+  <div class="panel">
+    <h2>Theme Mutator</h2>
+    <button onclick="mutate()">Mutate Accent</button>
+  </div>
+
+</div>
+
+<script>
+/* BUTTON GRID */
+const grid = document.getElementById("grid");
+grid.style.display = "grid";
+grid.style.gridTemplateColumns = "repeat(10, 1fr)";
+grid.style.gap = "6px";
+
+for (let i = 0; i < 100; i++) {
+  const btn = document.createElement("button");
+  btn.innerText = i + 1;
+  btn.onclick = () => btn.style.transform = "rotate(" + (Math.random()*20-10) + "deg)";
+  grid.appendChild(btn);
+}
+
+/* THEME MUTATOR */
+function randomColor() {
+  return "#" + Math.floor(Math.random()*16777215).toString(16);
+}
+
+function mutate() {
+  const accent = randomColor();
+  document.documentElement.style.setProperty('--accent', accent);
+  document.documentElement.style.setProperty('--accent-soft', accent + "33");
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Howard's lab</title>
+  <link rel="stylesheet" href="Woah.css">
+</head>
+<body>
+
+<div class="container">
+
+  <header class="panel header">
+    <h1>Howard's lab</h1>
+    <span>WoahUI 1.0.0</span>
+  </header>
+
+  <nav class="panel nav">
+    <a href="sandbox/">Sandbox</a>
+    <a href="toys/">Toys</a>
+    <a href="builds/">Builds</a>
+    <a href="random/">Random</a>
+  </nav>
+
+  <section class="panel">
+    <h2>ACTIVE EXPERIMENTS/PROJECTS</h2>
+    <ul>
+      <li>Persimmon Browser</li>
+      <li>Luma</li>
+    </ul>
+  </section>
+
+  <section class="panel">
+    <h2>SYSTEM STATUS</h2>
+    <p>WoahUI Version: 1.0.0</p>
+    <p>Experiments: <span id="expCount">7</span></p>
+    <p>Stability: Questionable</p>
+  </section>
+
+  <div class="panel controls">
+    <button onclick="enterSandbox()">ENTER SANDBOX</button>
+    <button onclick="breakSomething()">BREAK SOMETHING</button>
+  </div>
+
+</div>
+
+<script src="woah.js"></script>
+</body>
+</html>

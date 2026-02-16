@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Mini OS</title>
+  <link rel="../../Woah.css">
+  <link rel="stylesheet" href="os.css">
+</head>
+<body>
+
+<div class="container">
+
+  <div class="panel header">
+    <h1>LongviewOS v0.3</h1>
+    <a href="../../index.html">← Back</a>
+  </div>
+
+  <div id="desktop">
+
+    <div id="menu-bar">
+      <button onclick="toggleAppMenu()">Apps</button>
+      <div id="app-menu" class="hidden">
+        <div onclick="launchApp('files')">Files</div>
+        <div onclick="launchApp('editor')">Editor</div>
+        <div onclick="launchApp('terminal')">Terminal</div>
+        <div onclick="launchApp('taskmanager')">Task Manager</div>
+        <div onclick="launchApp('about')">About</div>
+      </div>
+    </div>
+
+    <div id="minimized-tray"></div>
+
+  </div>
+
+</div>
+
+<script src="os.js"></script>
+<script src="state.js"></script>
+<script src="apps/files.js"></script>
+<script src="apps/editor.js"></script>
+<script src="apps/taskmanager.js"></script>
+<script src="apps/terminal.js"></script>
+<script src="apps/about.js"></script>
+
+</body>
+</html>

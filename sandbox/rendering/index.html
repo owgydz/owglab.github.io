@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Rendering Lab</title>
+  <link rel="../../Woah.css">
+</head>
+<body>
+
+<div class="container">
+
+  <div class="panel header">
+    <h1>Rendering Experiments</h1>
+    <a href="../../index.html">← Back</a>
+  </div>
+
+  <div class="panel">
+    <h2>Canvas Noise Generator</h2>
+    <canvas id="noiseCanvas" width="600" height="300"></canvas>
+    <button onclick="generateNoise()">Generate</button>
+  </div>
+
+  <div class="panel">
+    <h2>Particle Rain</h2>
+    <canvas id="rainCanvas" width="600" height="300"></canvas>
+  </div>
+
+</div>
+
+<script>
+/* NOISE */
+function generateNoise() {
+  const canvas = document.getElementById("noiseCanvas");
+  const ctx = canvas.getContext("2d");
+  const img = ctx.createImageData(canvas.width, canvas.height);
+
+  for (let i = 0; i < img.data.length; i += 4) {
+    const val = Math.random() * 255;
+    img.data[i] = val;
+    img.data[i+1] = val;
+    img.data[i+2] = val;
+    img.data[i+3] = 255;
+  }
+
+  ctx.putImageData(img, 0, 0);
+}
+
+/* PARTICLE RAIN */
+const rainCanvas = document.getElementById("rainCanvas");
+const rctx = rainCanvas.getContext("2d");
+let drops = [];
+
+for (let i = 0; i < 100; i++) {
+  drops.push({
+    x: Math.random() * rainCanvas.width,
+    y: Math.random() * rainCanvas.height,
+    speed: 2 + Math.random() * 4
+  });
+}
+
+function animateRain() {
+  rctx.clearRect(0,0,rainCanvas.width,rainCanvas.height);
+  rctx.fillStyle = "#00f0ff";
+
+  drops.forEach(d => {
+    rctx.fillRect(d.x, d.y, 2, 10);
+    d.y += d.speed;
+    if (d.y > rainCanvas.height) d.y = 0;
+  });
+
+  requestAnimationFrame(animateRain);
+}
+
+animateRain();
+</script>
+
+</body>
+</html>

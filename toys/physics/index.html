@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Physics Sandbox</title>
+  <link rel="../../Woah.css">
+</head>
+<body>
+
+<div class="container">
+
+  <div class="panel header">
+    <h1>Physics Sandbox</h1>
+    <a href="../../index.html">← Back</a>
+  </div>
+
+  <div class="panel">
+    <canvas id="physicsCanvas" width="600" height="400"></canvas>
+  </div>
+
+</div>
+
+<script>
+const canvas = document.getElementById("physicsCanvas");
+const ctx = canvas.getContext("2d");
+
+let balls = [];
+
+canvas.addEventListener("click", (e) => {
+  balls.push({
+    x: e.offsetX,
+    y: e.offsetY,
+    vx: (Math.random() - 0.5) * 8,
+    vy: -5,
+    radius: 10,
+  });
+});
+
+function animate() {
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  balls.forEach(b => {
+    b.vy += 0.3; // gravity
+    b.x += b.vx;
+    b.y += b.vy;
+
+    if (b.y + b.radius > canvas.height) {
+      b.y = canvas.height - b.radius;
+      b.vy *= -0.8; // bounce
+    }
+
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+    ctx.fillStyle = "#00f0ff";
+    ctx.fill();
+  });
+
+  requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+
+</body>
+</html>

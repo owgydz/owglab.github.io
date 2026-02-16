@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Lab Clicker</title>
+  <link rel="../../Woah.css">
+</head>
+<body>
+
+<div class="container">
+
+  <div class="panel header">
+    <h1>Lab Clicker</h1>
+    <a href="../../index.html">← Back</a>
+  </div>
+
+  <div class="panel">
+    <h2>Lab Power: <span id="power">0</span></h2>
+    <button onclick="clickPower()">Generate Power</button>
+  </div>
+
+  <div class="panel">
+    <h2>Upgrades</h2>
+    <button onclick="buyUpgrade()">Upgrade (Cost: 10)</button>
+  </div>
+
+</div>
+
+<script>
+let power = 0;
+let multiplier = 1;
+
+function clickPower() {
+  power += multiplier;
+  update();
+}
+
+function buyUpgrade() {
+  if (power >= 10) {
+    power -= 10;
+    multiplier++;
+    update();
+  }
+}
+
+function update() {
+  document.getElementById("power").innerText = power;
+}
+</script>
+
+</body>
+</html>
