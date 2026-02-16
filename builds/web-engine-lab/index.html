@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Web Engine Lab</title>
+  <link rel="stylesheet" href="../../Woah.css">
+  <link rel="stylesheet" href="engine.css">
+</head>
+<body>
+
+<div class="container">
+
+  <div class="panel header">
+    <h1>Web Engine Lab v1.0.0</h1>
+    <a href="../../index.html">← Back</a>
+  </div>
+
+  <div class="engine-layout">
+
+    <!-- LEFT: WORKSPACE -->
+    <div class="editor-panel">
+      <h2>Workspace</h2>
+
+      <input type="file" id="fileLoader" accept=".html" />
+      <button onclick="renderEngine()">Render</button>
+
+      <textarea id="htmlInput">
+<h1>Hello Engine</h1>
+<p>Edit this and click Render.</p>
+      </textarea>
+
+      <textarea id="cssInput">
+body { font-family: sans-serif; }
+h1 { color: red; }
+      </textarea>
+    </div>
+
+    <!-- CENTER: VIEWPORT -->
+    <div class="render-panel">
+      <h2>Viewport</h2>
+      <iframe id="engineFrame"></iframe>
+    </div>
+
+    <!-- RIGHT: DOM INSPECTOR -->
+    <div class="dom-panel">
+      <h2>DOM Tree</h2>
+      <div id="domTree"></div>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="engine.js"></script>
+</body>
+</html>
