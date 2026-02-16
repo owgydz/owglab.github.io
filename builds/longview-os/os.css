@@ -1,69 +1,107 @@
+/* Desktop Container */
 #desktop {
   position: relative;
   height: 600px;
   border: 1px solid var(--accent-soft);
+  background: var(--bg);
   overflow: hidden;
 }
 
+/* Top Menu Bar */
 #menu-bar {
   position: absolute;
   top: 0;
   left: 0;
-  padding: 6px;
+  right: 0;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
   background: var(--panel);
   border-bottom: 1px solid var(--accent-soft);
+  z-index: 1000;
 }
 
+/* App Dropdown */
 #app-menu {
   position: absolute;
-  top: 30px;
-  left: 0;
+  top: 32px;
+  left: 8px;
+  min-width: 140px;
   background: var(--panel);
   border: 1px solid var(--accent-soft);
   display: flex;
   flex-direction: column;
+  box-shadow: 0 0 10px var(--accent-soft);
+  z-index: 1001;
 }
 
 #app-menu div {
-  padding: 6px 12px;
+  padding: 8px 12px;
   cursor: pointer;
+  user-select: none;
 }
 
 #app-menu div:hover {
   background: var(--accent-soft);
 }
 
+/* Hide Utility */
 .hidden {
   display: none;
 }
 
+/* Windows */
 .window {
   position: absolute;
-  width: 400px;
+  width: 420px;
   height: 300px;
   background: var(--panel);
   border: 1px solid var(--accent-soft);
   box-shadow: 0 0 10px var(--accent-soft);
   resize: both;
-  overflow: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
+/* Window Header */
 .window-header {
-  padding: 6px;
+  padding: 6px 10px;
   background: var(--accent-soft);
   cursor: move;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  user-select: none;
 }
 
+/* Window Controls */
+.window-header button {
+  margin-left: 5px;
+  padding: 2px 6px;
+  font-size: 0.8rem;
+}
+
+/* Window Body */
 .window-body {
+  flex: 1;
   padding: 8px;
+  overflow: auto;
 }
 
+/* Minimized Tray */
 #minimized-tray {
   position: absolute;
-  bottom: 5px;
-  left: 5px;
+  bottom: 6px;
+  left: 6px;
   display: flex;
-  gap: 5px;
+  gap: 6px;
+  z-index: 1000;
+}
+
+#minimized-tray button {
+  padding: 4px 8px;
+  font-size: 0.75rem;
 }
