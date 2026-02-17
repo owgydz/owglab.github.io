@@ -1,81 +1,128 @@
-function renderEngine() {
-  const html = document.getElementById("htmlInput").value;
-  const css = document.getElementById("cssInput").value;
-  const frame = document.getElementById("engineFrame");
+const htmlInput = document.getElementById("htmlInput");
+const cssInput = document.getElementById("cssInput");
+const jsInput = document.getElementById("jsInput");
+const frame = document.getElementById("engineFrame");
+const metrics = document.getElementById("metrics");
 
-  const doc = frame.contentDocument || frame.contentWindow.document;
+htmlInput.value = "<h1>Web Engine 3.00</h1><div class='box'>Inspect Me</div>";
+cssInput.value = ".box { padding:20px; margin:20px; background:lightgray; }";
+
+let selectedNode = null;
+
+
+function renderEngine() {
+  const start = performance.now();
+  const doc = frame.contentDocument;
 
   doc.open();
   doc.write(`
     <html>
       <head>
-        <style>${css}</style>
+        <style>${cssInput.value}</style>
       </head>
       <body>
-        ${html}
+        ${htmlInput.value}
       </body>
     </html>
   `);
   doc.close();
 
-  setTimeout(buildDOMTree, 50);
+  setTimeout(() => {
+    buildDOMTree();
+    runCustomParser();
+    const nodeCount = doc.querySelectorAll("*").length;
+    const end = performance.now();
+    metrics.innerText = `Nodes: ${nodeCount} | Render: ${(end - start).toFixed(2)}ms`;
+  }, 50);
 }
 
-/* ===== FILE LOADER ===== */
-
-document.getElementById("fileLoader").addEventListener("change", function(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = function(event) {
-    document.getElementById("htmlInput").value = event.target.result;
-    renderEngine();
-  };
-  reader.readAsText(file);
-});
-
-/* ===== DOM TREE ===== */
 
 function buildDOMTree() {
-  const frame = document.getElementById("engineFrame");
   const doc = frame.contentDocument;
-  const treeContainer = document.getElementById("domTree");
-  treeContainer.innerHTML = "";
+  const container = document.getElementById("domTree");
+  container.innerHTML = "";
 
   function traverse(node, depth = 0) {
-    if (node.nodeType !== 1) return; // element nodes only
+    if (node.nodeType !== 1) return;
 
     const div = document.createElement("div");
-    div.className = "dom-node";
-    div.style.marginLeft = depth * 10 + "px";
+    div.style.marginLeft = depth * 12 + "px";
     div.textContent = "<" + node.tagName.toLowerCase() + ">";
+    div.onclick = () => inspectNode(node);
+    container.appendChild(div);
 
-    div.onclick = () => highlightNode(node);
-
-    treeContainer.appendChild(div);
-
-    Array.from(node.children).forEach(child => {
-      traverse(child, depth + 1);
-    });
+    Array.from(node.children).forEach(child => traverse(child, depth + 1));
   }
 
   traverse(doc.body);
 }
 
-/* ===== HIGHLIGHT ===== */
 
-function highlightNode(node) {
-  const frame = document.getElementById("engineFrame");
-  const doc = frame.contentDocument;
-
-  // remove old highlight
-  doc.querySelectorAll(".__highlight__").forEach(el => {
-    el.classList.remove("__highlight__");
-    el.style.outline = "";
-  });
-
-  node.style.outline = "2px solid red";
+function inspectNode(node) {
+  selectedNode = node;
+  showInspector(node);
 }
- 
+
+function showInspector(node) {
+  const styles = getComputedStyle(node);
+  const inspector = document.getElementById("styleInspector");
+
+  inspector.innerHTML = `
+    Tag: ${node.tagName.toLowerCase()}<br>
+    Classes: ${node.className}<br>
+    Width: ${styles.width}<br>
+    Height: ${styles.height}<br>
+    Display: ${styles.display}<br>
+    Margin: ${styles.margin}<br>
+    Padding: ${styles.padding}
+  `;
+}
+
+
+function runJS() {
+  const doc = frame.contentDocument;
+  try {
+    const script = doc.createElement("script");
+    script.innerHTML = jsInput.value;
+    doc.body.appendChild(script);
+  } catch (e) {
+    alert("JS Error: " + e.message);
+  }
+}
+
+document.getElementById("layoutDebug").addEventListener("change", function() {
+  const doc = frame.contentDocument;
+  if (!doc.body) return;
+
+  if (this.checked) {
+    doc.body.classList.add("layout-outline");
+  } else {
+    doc.body.classList.remove("layout-outline");
+  }
+});
+
+
+document.getElementById("widthSlider").addEventListener("input", function() {
+  frame.style.width = this.value + "px";
+});
+
+document.getElementById("liveToggle").addEventListener("change", function() {
+  if (this.checked) {
+    htmlInput.addEventListener("input", renderEngine);
+    cssInput.addEventListener("input", renderEngine);
+  } else {
+    htmlInput.removeEventListener("input", renderEngine);
+    cssInput.removeEventListener("input", renderEngine);
+  }
+});
+
+
+function runCustomParser() {
+  const output = document.getElementById("customParserOutput");
+  const html = htmlInput.value;
+
+  const matches = html.match(/<\/?([a-zA-Z0-9\-]+)/g) || [];
+  output.innerHTML = matches.map(tag => tag.replace("<","&lt;")).join("<br>");
+}
+
 document.addEventListener("DOMContentLoaded", renderEngine);

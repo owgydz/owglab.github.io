@@ -10,41 +10,66 @@
 
 <div class="container">
 
-  <div class="panel header">
-    <h1>Web Engine Lab v1.0.0</h1>
-    <a href="../../index.html">← Back</a>
+  <div class="woah-panel woah-header">
+    <h1>Web Engine Lab v3.00</h1>
+    <a href="../../index.html" class="woah-button woah-button-secondary">← Back</a>
+  </div>
+
+  <div class="woah-panel engine-controls">
+    <label>
+      <input type="checkbox" id="liveToggle"> Live Mode
+    </label>
+
+    <label>
+      Layout Debug
+      <input type="checkbox" id="layoutDebug">
+    </label>
+
+    <label>
+      Viewport Width:
+      <input type="range" min="300" max="1200" value="800" id="widthSlider">
+    </label>
+
+    <span id="metrics" class="text-muted"></span>
   </div>
 
   <div class="engine-layout">
 
-    <!-- LEFT: WORKSPACE -->
-    <div class="editor-panel">
-      <h2>Workspace</h2>
+    <!-- Workspace -->
+    <div class="editor-panel woah-panel">
+      <h2>HTML</h2>
+      <textarea id="htmlInput"></textarea>
 
-      <input type="file" id="fileLoader" accept=".html" />
-      <button onclick="renderEngine()">Render</button>
+      <h2>CSS</h2>
+      <textarea id="cssInput"></textarea>
 
-      <textarea id="htmlInput">
-<h1>Hello Engine</h1>
-<p>Edit this and click Render.</p>
-      </textarea>
+      <h2>JS Console</h2>
+      <textarea id="jsInput" placeholder="console.log('Hello')"></textarea>
+      <button class="woah-button mt-2" onclick="runJS()">Run JS</button>
 
-      <textarea id="cssInput">
-body { font-family: sans-serif; }
-h1 { color: red; }
-      </textarea>
+      <button class="woah-button mt-2" onclick="renderEngine()">Render</button>
     </div>
 
-    <!-- CENTER: VIEWPORT -->
-    <div class="render-panel">
+    <!-- Viewport -->
+    <div class="render-panel woah-panel">
       <h2>Viewport</h2>
       <iframe id="engineFrame"></iframe>
     </div>
 
-    <!-- RIGHT: DOM INSPECTOR -->
-    <div class="dom-panel">
+    <!-- Inspector -->
+    <div class="inspector-panel woah-panel">
       <h2>DOM Tree</h2>
       <div id="domTree"></div>
+
+      <hr class="mt-2 mb-2">
+
+      <h2>Inspector</h2>
+      <div id="styleInspector"></div>
+
+      <hr class="mt-2 mb-2">
+
+      <h2>Custom HTML Parser</h2>
+      <div id="customParserOutput"></div>
     </div>
 
   </div>

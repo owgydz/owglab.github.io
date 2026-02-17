@@ -6,17 +6,18 @@
 
 .editor-panel,
 .render-panel,
-.dom-panel {
+.inspector-panel {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
 
 textarea {
-  height: 120px;
-  margin: 8px 0;
+  height: 100px;
+  margin-top: 6px;
+  margin-bottom: 10px;
   background: var(--panel);
-  color: var(--text);
+  color: white;
   border: 1px solid var(--accent-soft);
   padding: 8px;
   resize: vertical;
@@ -26,14 +27,25 @@ iframe {
   flex: 1;
   border: 1px solid var(--accent-soft);
   background: white;
+  width: 800px;
+  max-width: 100%;
 }
 
-.dom-node {
+#domTree div {
   cursor: pointer;
-  padding-left: 10px;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  margin-left: 10px;
 }
 
-.dom-node:hover {
+#domTree div:hover {
   background: var(--accent-soft);
+}
+
+.layout-outline * {
+  outline: 1px solid rgba(255,0,0,0.3);
+}
+
+#customParserOutput {
+  font-size: 0.8rem;
+  margin-top: 5px;
 }
