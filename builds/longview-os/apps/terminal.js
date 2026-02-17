@@ -1,7 +1,8 @@
 function terminalApp() {
   return `
-    <div id="terminal-output" style="height: 180px; overflow-y: auto; margin-bottom: 6px;"></div>
-    <input id="terminal-input" style="width:100%;" placeholder="type a command"
+    <div id="terminal-output" style="height:150px; overflow-y:auto;"></div>
+    <input id="terminal-input" style="width:100%;" 
+      placeholder="type command"
       onkeydown="handleCommand(event)">
   `;
 }
@@ -9,61 +10,57 @@ function terminalApp() {
 function handleCommand(e) {
   if (e.key !== "Enter") return;
 
-  const inputField = e.target;
-  const command = inputField.value.trim();
-  const output = inputField.parentElement.querySelector("#terminal-output");
+  const input = e.target.value.trim();
+  const output = e.target.parentElement.querySelector("#terminal-output");
 
-  if (!command) return;
+  printLine(output, "> " + input);
 
-  printToTerminal(output, "> " + command);
+  const args = input.split(" ");
+  const cmd = args[0];
 
-  const args = command.split(" ");
-  const base = args[0];
-
-  switch (base) {
-
+  switch (cmd) {
     case "help":
-      printToTerminal(output, "Available commands:");
-      printToTerminal(output, "help, clear, ls, open <file>, echo <text>");
+      printLine(output, "Commands: help, ls, cat, touch, rm, clear");
+      break;
+
+    case "ls":
+      Object.keys(fileSystem).forEach(f => printLine(output, f));
+      break;
+
+    case "cat":
+      if (!fileSystem[args[1]]) {
+        printLine(output, "File not found.");
+      } else {
+        printLine(output, fileSystem[args[1]]);
+      }
+      break;
+
+    case "touch":
+      fileSystem[args[1]] = "";
+      persistFS();
+      printLine(output, "Created " + args[1]);
+      break;
+
+    case "rm":
+      delete fileSystem[args[1]];
+      persistFS();
+      printLine(output, "Deleted " + args[1]);
       break;
 
     case "clear":
       output.innerHTML = "";
       break;
 
-    case "ls":
-      Object.keys(fileSystem).forEach(f => {
-        printToTerminal(output, f);
-      });
-      break;
-
-    case "open":
-      if (!args[1]) {
-        printToTerminal(output, "Usage: open <filename>");
-        break;
-      }
-      if (!fileSystem[args[1]]) {
-        printToTerminal(output, "File not found.");
-        break;
-      }
-      openFile(args[1]);
-      printToTerminal(output, "Opened " + args[1]);
-      break;
-
-    case "echo":
-      printToTerminal(output, args.slice(1).join(" "));
-      break;
-
     default:
-      printToTerminal(output, "Unknown command.");
+      printLine(output, "Unknown command.");
   }
 
-  inputField.value = "";
+  e.target.value = "";
   output.scrollTop = output.scrollHeight;
 }
 
-function printToTerminal(output, text) {
-  const line = document.createElement("div");
-  line.textContent = text;
-  output.appendChild(line);
+function printLine(output, text) {
+  const div = document.createElement("div");
+  div.textContent = text;
+  output.appendChild(div);
 }

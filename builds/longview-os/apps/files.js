@@ -1,19 +1,19 @@
-let fileSystem = JSON.parse(localStorage.getItem("miniFS")) || {
-  "notes.txt": "Welcome to mini-os."
+let fileSystem = JSON.parse(localStorage.getItem("lvFS")) || {
+  "readme.txt": "Welcome to LongviewOS."
 };
 
 function persistFS() {
-  localStorage.setItem("miniFS", JSON.stringify(fileSystem));
+  localStorage.setItem("lvFS", JSON.stringify(fileSystem));
 }
 
 function filesApp() {
   return `
     <button onclick="createFile()">New File</button>
     <ul>
-      ${Object.keys(fileSystem).map(f =>
+      ${Object.keys(fileSystem).map(name =>
         `<li>
-          <span onclick="openFile('${f}')">${f}</span>
-          <button onclick="deleteFile('${f}')">X</button>
+          <span onclick="openFile('${name}')">${name}</span>
+          <button onclick="deleteFile('${name}')">X</button>
         </li>`
       ).join("")}
     </ul>
