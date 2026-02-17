@@ -9,41 +9,91 @@
 
 <div class="container">
 
-  <header class="panel header">
+  <div class="woah-panel woah-header">
     <h1>Howard's lab</h1>
-    <span>Running WoahUI 1.5.0</span>
-  </header>
+    <span class="text-muted">Running WoahUI 1.5.0</span>
+  </div>
 
-  <nav class="panel nav">
+  <div class="woah-panel woah-nav">
     <a href="sandbox/">Sandbox</a>
     <a href="toys/">Toys</a>
     <a href="builds/">Builds</a>
     <a href="random/">Random</a>
-  </nav>
+  </div>
 
-  <section class="panel">
-    <h2>ACTIVE EXPERIMENTS/PROJECTS</h2>
+  <div class="woah-panel">
+    <h2>ACTIVE EXPERIMENTS / PROJECTS</h2>
     <ul>
       <li>Persimmon Browser</li>
       <li>Luma</li>
     </ul>
-  </section>
+  </div>
 
-  <section class="panel">
+  <div class="woah-panel">
     <h2>SYSTEM STATUS</h2>
     <p>WoahUI Version: 1.5.0</p>
-    <p>Website Version: 3.0.0</p>
+    <p>Website Version: 4.0.0</p>
     <p>Experiments: <span id="expCount">7</span></p>
     <p>Stability: Questionable</p>
-  </section>
+  </div>
 
-  <div class="panel controls">
-    <button onclick="enterSandbox()">ENTER SANDBOX</button>
-    <button onclick="breakSomething()">BREAK SOMETHING</button>
+  <div class="woah-panel">
+    <h2>CLIENT SYSTEM INFO (hecker thingy you wouldn't understand)</h2>
+    <p><strong>Operating System:</strong> <span id="osInfo">Detecting...</span></p>
+    <p><strong>Browser:</strong> <span id="browserInfo">Detecting...</span></p>
+    <p><strong>Platform:</strong> <span id="platformInfo">Detecting...</span></p>
+    <p><strong>User Agent:</strong></p>
+    <p class="text-muted" id="uaString" style="word-break: break-all;"></p>
+  </div>
+
+  <div class="woah-panel flex gap-2">
+    <button class="woah-button" onclick="enterSandbox()">ENTER SANDBOX</button>
+    <button class="woah-button" onclick="breakSomething()">BREAK SOMETHING</button>
   </div>
 
 </div>
 
 <script src="woah.js"></script>
+
+<script>
+function detectOS() {
+  const ua = navigator.userAgent;
+  let os = "Unknown OS. What are you using bro?";
+
+  if (ua.includes("Windows NT 10.0")) os = "Windows 10/11";
+  else if (ua.includes("Windows NT 6.3")) os = "Windows 8.1";
+  else if (ua.includes("Windows NT 6.2")) os = "Windows 8";
+  else if (ua.includes("Windows NT 6.1")) os = "Windows 7";
+  else if (ua.includes("Mac OS X")) os = "macOS";
+  else if (ua.includes("Android")) os = "Android";
+  else if (ua.includes("iPhone") || ua.includes("iPad")) os = "iOS";
+  else if (ua.includes("Linux")) os = "Linux";
+
+  return os;
+}
+
+function detectBrowser() {
+  const ua = navigator.userAgent;
+
+  if (ua.includes("Edg/")) return "Microsoft Edge";
+  if (ua.includes("Chrome") && !ua.includes("Edg/")) return "Google Chrome";
+  if (ua.includes("Firefox")) return "Mozilla Firefox";
+  if (ua.includes("Safari") && !ua.includes("Chrome")) return "Safari";
+  return "Unknown Browser";
+}
+
+function getBrowserVersion() {
+  const ua = navigator.userAgent;
+  const match = ua.match(/(Chrome|Firefox|Edg|Version)\/([\d\.]+)/);
+  return match ? match[0] : "Unknown Version. What browser are you using?";
+}
+
+document.getElementById("osInfo").innerText = detectOS();
+document.getElementById("browserInfo").innerText =
+  detectBrowser() + " (" + getBrowserVersion() + ")";
+document.getElementById("platformInfo").innerText = navigator.platform;
+document.getElementById("uaString").innerText = navigator.userAgent;
+</script>
+
 </body>
 </html>
