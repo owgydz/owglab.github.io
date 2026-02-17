@@ -3,44 +3,65 @@
 <head>
   <meta charset="UTF-8">
   <title>UI Stress Tests</title>
-  <link rel="stylesheet" href="../Woah.css">
+  <link rel="stylesheet" href="../../Woah.css">
 </head>
 <body>
 
 <div class="container">
 
-  <div class="panel header">
+  <div class="woah-panel woah-header">
     <h1>UI Stress Tests</h1>
-    <a href="../../index.html">← Back</a>
+    <a href="../../index.html" class="woah-button woah-button-secondary">← Back</a>
   </div>
 
-  <div class="panel">
+  <div class="woah-panel">
     <h2>100 Button Grid</h2>
-    <div id="grid"></div>
+    <div id="grid" class="grid"></div>
   </div>
 
-  <div class="panel">
-    <h2>Theme Mutator</h2>
-    <button onclick="mutate()">Mutate Accent</button>
+  <div class="woah-panel">
+    <h2>Theme Controls</h2>
+    <div class="flex gap-2">
+      <button class="woah-button" onclick="mutate()">Mutate Accent</button>
+      <button class="woah-button" onclick="setTheme('theme-cyber')">Cyber</button>
+      <button class="woah-button" onclick="setTheme('theme-lime')">Lime</button>
+      <button class="woah-button" onclick="setTheme('theme-magenta')">Magenta</button>
+      <button class="woah-button" onclick="setTheme('theme-amber')">Amber</button>
+    </div>
+  </div>
+
+  <div class="woah-panel">
+    <h2>Spacing Stress</h2>
+    <button class="woah-button" onclick="toggleSpacing()">Toggle Large Spacing</button>
+  </div>
+
+  <div class="woah-panel">
+    <h2>Z-Index Stress</h2>
+    <button class="woah-button" onclick="spawnLayers()">Spawn Floating Layers</button>
   </div>
 
 </div>
 
 <script>
-/* BUTTON GRID */
+
+
 const grid = document.getElementById("grid");
 grid.style.display = "grid";
 grid.style.gridTemplateColumns = "repeat(10, 1fr)";
-grid.style.gap = "6px";
+grid.style.gap = "10px";
 
 for (let i = 0; i < 100; i++) {
   const btn = document.createElement("button");
+  btn.className = "woah-button";
   btn.innerText = i + 1;
-  btn.onclick = () => btn.style.transform = "rotate(" + (Math.random()*20-10) + "deg)";
+
+  btn.onclick = () => {
+    btn.style.transform = `rotate(${Math.random()*20-10}deg) scale(${1 + Math.random()*0.2})`;
+  };
+
   grid.appendChild(btn);
 }
 
-/* THEME MUTATOR */
 function randomColor() {
   return "#" + Math.floor(Math.random()*16777215).toString(16);
 }
@@ -50,6 +71,37 @@ function mutate() {
   document.documentElement.style.setProperty('--accent', accent);
   document.documentElement.style.setProperty('--accent-soft', accent + "33");
 }
+
+function setTheme(theme) {
+  document.body.classList.remove("theme-cyber","theme-lime","theme-magenta","theme-amber");
+  document.body.classList.add(theme);
+}
+
+
+let spacingToggled = false;
+
+function toggleSpacing() {
+  spacingToggled = !spacingToggled;
+  document.body.style.padding = spacingToggled ? "80px" : "40px";
+}
+
+function spawnLayers() {
+  for (let i = 0; i < 5; i++) {
+    const layer = document.createElement("div");
+    layer.className = "woah-panel shadow-soft";
+    layer.style.position = "fixed";
+    layer.style.top = Math.random() * window.innerHeight + "px";
+    layer.style.left = Math.random() * window.innerWidth + "px";
+    layer.style.zIndex = 500 + i;
+    layer.style.width = "150px";
+    layer.innerText = "Layer " + i;
+
+    document.body.appendChild(layer);
+
+    setTimeout(() => layer.remove(), 3000);
+  }
+}
+
 </script>
 
 </body>
