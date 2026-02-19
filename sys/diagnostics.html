@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>System Diagnostics</title>
+  <link rel="stylesheet" href="../Woah.css">
+</head>
+<body>
+
+<div class="container">
+
+  <div class="woah-panel woah-header">
+    <h1>System Diagnostics</h1>
+    <a href="../index.html" class="woah-button woah-button-secondary">← Back</a>
+  </div>
+
+  <div class="woah-panel">
+    <h2>Runtime Info</h2>
+    <p>Website Version: 5.0.0</p>
+    <p>WoahUI Version: 1.7.0</p>
+    <p>Uptime: <span id="uptime"></span>s</p>
+    <p>FPS: <span id="fps"></span></p>
+  </div>
+
+  <div class="woah-panel">
+    <h2>Hardware Info</h2>
+    <p>CPU Cores: <span id="cores"></span></p>
+    <p>Memory Usage: <span id="memory"></span></p>
+    <p>Platform: <span id="platform"></span></p>
+  </div>
+
+  <div class="woah-panel">
+    <h2>User Agent</h2>
+    <p id="ua" class="text-muted" style="word-break: break-all;"></p>
+  </div>
+
+</div>
+
+<script src="../core/runtime.js"></script>
+<script>
+function updateDiagnostics() {
+  const data = Runtime.getPerformanceData();
+
+  document.getElementById("uptime").innerText = data.uptime;
+  document.getElementById("fps").innerText = data.fps;
+  document.getElementById("cores").innerText = data.cores;
+  document.getElementById("memory").innerText = data.memory;
+  document.getElementById("platform").innerText = data.platform;
+  document.getElementById("ua").innerText = data.userAgent;
+}
+
+setInterval(updateDiagnostics, 500);
+</script>
+
+</body>
+</html>
