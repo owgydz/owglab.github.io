@@ -1,5 +1,5 @@
 /* =====================================================
-   WoahUI 1.5.0
+   WoahUI 1.7.0
    For da website
    Woah a little box for the comment
    ===================================================== */
@@ -9,6 +9,7 @@
   --bg: #0d0f14;
   --panel: #151922;
   --panel-elevated: #1c212c;
+
   --accent: #00f0ff;
   --accent-soft: rgba(0, 240, 255, 0.15);
 
@@ -18,16 +19,23 @@
   --radius: 8px;
 
   --space-1: 6px;
-  --space-2: 10px;
-  --space-3: 16px;
-  --space-4: 24px;
+  --space-2: 12px;
+  --space-3: 18px;
+  --space-4: 28px;
   --space-5: 40px;
+
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
 
   --z-base: 1;
   --z-dropdown: 1000;
   --z-modal: 2000;
+  --z-toast: 3000;
 }
 
+/* =====================
+   RESET
+===================== */
 
 * {
   margin: 0;
@@ -41,53 +49,32 @@ body {
   color: var(--text);
   padding: var(--space-5);
   line-height: 1.5;
-}
-
-
-h1 {
-  font-size: 2rem;
-  margin-bottom: var(--space-3);
-}
-
-h2 {
-  font-size: 1.25rem;
-  margin-bottom: var(--space-2);
-  color: var(--accent);
-}
-
-p {
-  margin-bottom: var(--space-2);
-  color: var(--text);
-}
-
-.text-muted {
-  color: var(--text-muted);
+  transition: background var(--transition-normal);
 }
 
 
 .container {
-  max-width: 1000px;
+  max-width: 1100px;
   margin: auto;
 }
 
-.flex {
-  display: flex;
-}
-
-.flex-col {
-  display: flex;
-  flex-direction: column;
-}
-
-.flex-between {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+.flex { display: flex; }
+.flex-col { display: flex; flex-direction: column; }
+.flex-between { display: flex; justify-content: space-between; align-items: center; }
 
 .gap-1 { gap: var(--space-1); }
 .gap-2 { gap: var(--space-2); }
 .gap-3 { gap: var(--space-3); }
+
+
+.woah-grid {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.grid-2 { grid-template-columns: repeat(2, 1fr); }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-4 { grid-template-columns: repeat(4, 1fr); }
 
 
 .woah-panel {
@@ -96,49 +83,31 @@ p {
   padding: var(--space-3);
   border-radius: var(--radius);
   margin-bottom: var(--space-3);
-  position: relative;
-  z-index: var(--z-base);
-  transition: 0.2s ease;
+  transition: var(--transition-normal);
+}
+
+.woah-panel:hover {
+  box-shadow: 0 0 12px var(--accent-soft);
 }
 
 .woah-panel-elevated {
   background: var(--panel-elevated);
-  box-shadow: 0 0 10px var(--accent-soft);
 }
-
 
 .woah-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--space-4);
 }
 
 .woah-header h1 {
   color: var(--accent);
 }
 
-
-
 .woah-nav {
   display: flex;
   gap: var(--space-2);
 }
-
-.woah-nav a {
-  text-decoration: none;
-  color: var(--text);
-  padding: var(--space-1) var(--space-2);
-  border: 1px solid var(--accent-soft);
-  border-radius: var(--radius);
-  transition: 0.2s ease;
-}
-
-.woah-nav a:hover {
-  background: var(--accent);
-  color: black;
-}
-
 
 .woah-button {
   padding: var(--space-2) var(--space-3);
@@ -147,12 +116,13 @@ p {
   color: var(--accent);
   border-radius: var(--radius);
   cursor: pointer;
-  transition: 0.2s ease;
+  transition: var(--transition-fast);
 }
 
 .woah-button:hover {
   background: var(--accent);
   color: black;
+  transform: translateY(-2px);
 }
 
 .woah-button-secondary {
@@ -161,61 +131,71 @@ p {
 }
 
 
-ul {
-  margin-left: var(--space-3);
-  margin-top: var(--space-2);
-}
-
-
-.z-dropdown {
-  z-index: var(--z-dropdown);
-}
-
-.z-modal {
+.woah-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
   z-index: var(--z-modal);
 }
 
-
-.theme-cyber {
-  --accent: #00f0ff;
-  --accent-soft: rgba(0, 240, 255, 0.15);
+.woah-modal {
+  background: var(--panel-elevated);
+  padding: var(--space-4);
+  border-radius: var(--radius);
+  width: 400px;
+  animation: fadeIn 0.2s ease;
 }
 
-.theme-lime {
-  --accent: #00ff88;
-  --accent-soft: rgba(0, 255, 136, 0.15);
+.woah-toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: var(--z-toast);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
 }
 
-.theme-magenta {
-  --accent: #ff00cc;
-  --accent-soft: rgba(255, 0, 204, 0.15);
+.woah-toast {
+  background: var(--panel-elevated);
+  border-left: 4px solid var(--accent);
+  padding: var(--space-2);
+  border-radius: var(--radius);
+  animation: slideIn 0.3s ease;
 }
 
-.theme-amber {
-  --accent: #ffb300;
-  --accent-soft: rgba(255, 179, 0, 0.15);
+.woah-dock {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: var(--panel);
+  display: flex;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-2);
+  border-top: 1px solid var(--accent-soft);
+  z-index: var(--z-dropdown);
 }
 
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
 
 .mt-1 { margin-top: var(--space-1); }
 .mt-2 { margin-top: var(--space-2); }
 .mt-3 { margin-top: var(--space-3); }
 
-.mb-1 { margin-bottom: var(--space-1); }
-.mb-2 { margin-bottom: var(--space-2); }
-.mb-3 { margin-bottom: var(--space-3); }
-
-.p-1 { padding: var(--space-1); }
-.p-2 { padding: var(--space-2); }
-.p-3 { padding: var(--space-3); }
+.text-muted { color: var(--text-muted); }
 
 .rounded { border-radius: var(--radius); }
-.shadow-soft { box-shadow: 0 0 8px var(--accent-soft); }
-
-::-webkit-scrollbar {
-  width: 8px;
-}
-
-::-webkit-scrollbar-thumb {
-  background: var(--accent-soft);
-}
+.shadow-soft { box-shadow: 0 0 10px var(--accent-soft); }
