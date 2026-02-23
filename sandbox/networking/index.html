@@ -1,69 +1,299 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>Networking Lab</title>
-  <link rel="stylesheet" href="../Woah.css">
+<meta charset="UTF-8">
+<title>Networking Lab</title>
+<link rel="stylesheet" href="../../Woah.css">
+<style>
+canvas { border:1px solid var(--accent-soft); }
+.packet-log, .panel-dark {
+  background:#111;
+  color:#0ff;
+  font-size:0.8rem;
+  padding:8px;
+  height:140px;
+  overflow-y:auto;
+}
+.cli {
+  background:black;
+  color:#0f0;
+  padding:8px;
+  height:120px;
+  overflow-y:auto;
+  font-size:0.8rem;
+}
+.cli input {
+  width:100%;
+  background:black;
+  color:#0f0;
+  border:none;
+  outline:none;
+}
+input[type=range] { width:100%; }
+</style>
 </head>
 <body>
 
 <div class="container">
 
-  <div class="panel header">
-    <h1>Networking Experiments</h1>
-    <a href="../../index.html">← Back</a>
-  </div>
+<div class="woah-panel woah-header">
+<h1>Networking Lab — Final Edition</h1>
+<a href="../../index.html" class="woah-button woah-button-secondary">← Back</a>
+</div>
 
-  <div class="panel">
-    <h2>Packet Flow Visualizer</h2>
-    <canvas id="netCanvas" width="600" height="300"></canvas>
-  </div>
+<div class="woah-panel">
+<button class="woah-button" onclick="setTool('PC')">PC</button>
+<button class="woah-button" onclick="setTool('Switch')">Switch</button>
+<button class="woah-button" onclick="setTool('Router')">Router</button>
+<button class="woah-button" onclick="setTool('Server')">Server</button>
+<button class="woah-button" onclick="setTool('wire')">Wire</button>
+<button class="woah-button" onclick="setTool('delete')">Delete</button>
+<button class="woah-button" onclick="togglePlay()">▶ Play</button>
+<button class="woah-button" onclick="exportTopology()">Export</button>
+<input type="file" id="importFile" />
+</div>
 
-  <div class="panel">
-    <h2>Ping Simulator</h2>
-    <button onclick="simulatePing()">Ping Server</button>
-    <p id="pingResult">Latency: -- ms</p>
-  </div>
+<div class="woah-panel">
+Packet Loss: <span id="lossLabel">0%</span>
+<input type="range" min="0" max="50" value="0" id="lossSlider">
+</div>
+
+<div class="woah-panel">
+<canvas id="canvas" width="1100" height="500"></canvas>
+</div>
+
+<div class="woah-grid grid-2">
+
+<div class="woah-panel">
+<h2>Packet Log</h2>
+<div id="packetLog" class="packet-log"></div>
+</div>
+
+<div class="woah-panel">
+<h2>NAT / DHCP</h2>
+<div id="natPanel" class="panel-dark"></div>
+<div id="dhcpPanel" class="panel-dark mt-2"></div>
+</div>
+
+</div>
+
+<div class="woah-panel">
+<h2>Subnet Calculator</h2>
+IP: <input id="subIP" value="192.168.1.0">
+Mask: <input id="subMask" value="24">
+<button class="woah-button" onclick="calcSubnet()">Calculate</button>
+<div id="subResult"></div>
+</div>
 
 </div>
 
 <script>
-const canvas = document.getElementById("netCanvas");
-const ctx = canvas.getContext("2d");
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
 
-let packets = [];
+let nodes=[], links=[], packets=[];
+let tool=null, selected=null, running=false;
+let packetLoss=0;
+let natTable={}, dhcpTable={};
+let dhcpPool=["192.168.1.10","192.168.1.11","192.168.1.12"];
 
-function spawnPacket() {
-  packets.push({
-    x: 0,
-    y: 150,
-    speed: 2 + Math.random() * 3
-  });
+document.getElementById("lossSlider").oninput=e=>{
+  packetLoss=parseInt(e.target.value);
+  document.getElementById("lossLabel").innerText=packetLoss+"%";
+};
+
+function setTool(t){ tool=t; }
+
+canvas.addEventListener("click",e=>{
+  const r=canvas.getBoundingClientRect();
+  const x=e.clientX-r.left;
+  const y=e.clientY-r.top;
+  const node=getNode(x,y);
+
+  if(!running){
+    if(tool && !["wire","delete"].includes(tool)){
+      nodes.push({id:tool+"-"+nodes.length,type:tool,x,y});
+    }
+
+    if(tool==="wire" && node){
+      if(!selected) selected=node;
+      else{
+        links.push({a:selected,b:node,latency:Math.random()*40+10,bandwidth:1});
+        selected=null;
+      }
+    }
+
+    if(tool==="delete" && node){
+      nodes=nodes.filter(n=>n!==node);
+      links=links.filter(l=>l.a!==node && l.b!==node);
+    }
+  }
+  else if(node){
+    createPacket(node);
+  }
+});
+
+function getNode(x,y){
+  return nodes.find(n =>
+    x>n.x-40 && x<n.x+40 &&
+    y>n.y-25 && y<n.y+25);
 }
 
-setInterval(spawnPacket, 500);
+function togglePlay(){ running=!running; }
 
-function animate() {
+function createPacket(source){
+  if(Math.random()*100<packetLoss){
+    log("Packet lost (random loss)");
+    return;
+  }
+
+  const target=nodes.find(n=>n!==source);
+  if(!target) return;
+
+  const path=findPath(source,target);
+  if(!path) return;
+
+  const protocol=["ICMP","TCP","UDP"][Math.floor(Math.random()*3)];
+
+  packets.push({
+    path,
+    step:0,
+    progress:0,
+    ttl:10,
+    protocol
+  });
+
+  assignDHCP(source);
+  applyNAT(source);
+
+  log(protocol+" packet created");
+}
+
+function assignDHCP(node){
+  if(!dhcpTable[node.id] && dhcpPool.length){
+    dhcpTable[node.id]=dhcpPool.shift();
+  }
+}
+
+function applyNAT(node){
+  if(!natTable[node.id]){
+    natTable[node.id]="203.0.113."+Math.floor(Math.random()*200);
+  }
+}
+
+function findPath(start,end){
+  const queue=[[start]];
+  const visited=new Set();
+  while(queue.length){
+    const path=queue.shift();
+    const node=path[path.length-1];
+    if(node===end) return path;
+    if(!visited.has(node)){
+      visited.add(node);
+      links.filter(l=>l.a===node||l.b===node)
+        .map(l=>l.a===node?l.b:l.a)
+        .forEach(n=>queue.push([...path,n]));
+    }
+  }
+  return null;
+}
+
+function draw(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  ctx.fillStyle = "#00f0ff";
-
-  packets.forEach(p => {
-    ctx.fillRect(p.x, p.y, 10, 4);
-    p.x += p.speed;
+  ctx.strokeStyle="#00f0ff";
+  links.forEach(l=>{
+    ctx.beginPath();
+    ctx.moveTo(l.a.x,l.a.y);
+    ctx.lineTo(l.b.x,l.b.y);
+    ctx.stroke();
   });
 
-  packets = packets.filter(p => p.x < canvas.width);
+  nodes.forEach(n=>{
+    ctx.fillStyle="#00f0ff";
+    ctx.fillRect(n.x-40,n.y-25,80,50);
+    ctx.fillStyle="#000";
+    ctx.fillText(n.type,n.x-20,n.y+5);
+  });
 
-  requestAnimationFrame(animate);
+  if(running){
+    packets.forEach(p=>{
+      if(p.ttl<=0){ log("TTL expired"); return; }
+
+      const from=p.path[p.step];
+      const to=p.path[p.step+1];
+      if(!to) return;
+
+      const link=links.find(l=>
+        (l.a===from && l.b===to) ||
+        (l.b===from && l.a===to));
+
+      p.progress+=0.01*(1/link.bandwidth);
+
+      const x=from.x+(to.x-from.x)*p.progress;
+      const y=from.y+(to.y-from.y)*p.progress;
+
+      ctx.fillStyle=p.protocol==="ICMP"?"#00ff88":
+                     p.protocol==="TCP"?"#ff8800":"#ff00ff";
+
+      ctx.fillRect(x-5,y-5,10,10);
+
+      if(p.progress>=1){
+        p.step++;
+        p.progress=0;
+        p.ttl--;
+      }
+    });
+
+    packets=packets.filter(p=>p.step<p.path.length-1 && p.ttl>0);
+  }
+
+  updatePanels();
+  requestAnimationFrame(draw);
+}
+draw();
+
+function log(t){
+  const d=document.getElementById("packetLog");
+  d.innerHTML+=t+"<br>";
+  d.scrollTop=d.scrollHeight;
 }
 
-animate();
+function updatePanels(){
+  document.getElementById("natPanel").innerHTML=
+    "<strong>NAT Table:</strong><br>"+
+    Object.entries(natTable).map(([k,v])=>k+" -> "+v).join("<br>");
 
-function simulatePing() {
-  const latency = Math.floor(10 + Math.random() * 200);
-  document.getElementById("pingResult").innerText =
-    "Latency: " + latency + " ms";
+  document.getElementById("dhcpPanel").innerHTML=
+    "<strong>DHCP Leases:</strong><br>"+
+    Object.entries(dhcpTable).map(([k,v])=>k+" -> "+v).join("<br>");
+}
+
+function exportTopology(){
+  const data={nodes,links};
+  const blob=new Blob([JSON.stringify(data)],{type:"application/json"});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="topology.json";
+  a.click();
+}
+
+document.getElementById("importFile").onchange=e=>{
+  const reader=new FileReader();
+  reader.onload=()=>{
+    const data=JSON.parse(reader.result);
+    nodes=data.nodes;
+    links=data.links;
+  };
+  reader.readAsText(e.target.files[0]);
+};
+
+function calcSubnet(){
+  const ip=document.getElementById("subIP").value;
+  const mask=parseInt(document.getElementById("subMask").value);
+  const hosts=Math.pow(2,32-mask)-2;
+  document.getElementById("subResult").innerText=
+    "Hosts: "+hosts;
 }
 </script>
 
