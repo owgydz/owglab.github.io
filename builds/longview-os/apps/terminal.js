@@ -1,66 +1,37 @@
 function terminalApp() {
   return `
-    <div id="terminal-output" style="height:150px; overflow-y:auto;"></div>
-    <input id="terminal-input" style="width:100%;" 
-      placeholder="type command"
-      onkeydown="handleCommand(event)">
+    <div id="terminalOutput"
+      style="background:black;color:#0f0;height:80%;overflow:auto;padding:5px;"></div>
+    <input id="terminalInput"
+      style="width:100%;background:black;color:#0f0;border:none;">
   `;
 }
 
-function handleCommand(e) {
-  if (e.key !== "Enter") return;
-
-  const input = e.target.value.trim();
-  const output = e.target.parentElement.querySelector("#terminal-output");
-
-  printLine(output, "> " + input);
-
-  const args = input.split(" ");
-  const cmd = args[0];
-
-  switch (cmd) {
-    case "help":
-      printLine(output, "Commands: help, ls, cat, touch, rm, clear");
-      break;
-
-    case "ls":
-      Object.keys(fileSystem).forEach(f => printLine(output, f));
-      break;
-
-    case "cat":
-      if (!fileSystem[args[1]]) {
-        printLine(output, "File not found.");
-      } else {
-        printLine(output, fileSystem[args[1]]);
-      }
-      break;
-
-    case "touch":
-      fileSystem[args[1]] = "";
-      persistFS();
-      printLine(output, "Created " + args[1]);
-      break;
-
-    case "rm":
-      delete fileSystem[args[1]];
-      persistFS();
-      printLine(output, "Deleted " + args[1]);
-      break;
-
-    case "clear":
-      output.innerHTML = "";
-      break;
-
-    default:
-      printLine(output, "Unknown command.");
+document.addEventListener("keydown", function(e){
+  if (e.target.id === "terminalInput" && e.key === "Enter") {
+    runCommand(e.target.value);
+    e.target.value = "";
   }
+});
 
-  e.target.value = "";
-  output.scrollTop = output.scrollHeight;
-}
+function runCommand(cmd) {
+  const out = document.getElementById("terminalOutput");
+  out.innerHTML += "> " + cmd + "<br>";
 
-function printLine(output, text) {
-  const div = document.createElement("div");
-  div.textContent = text;
-  output.appendChild(div);
+  if (cmd === "help")
+    out.innerHTML += "help, clear, files, sys<br>";
+
+  else if (cmd === "clear")
+    out.innerHTML = "";
+
+  else if (cmd === "files")
+    out.innerHTML += Object.keys(JSON.parse(localStorage.lvFiles)).join("<br>");
+
+  else if (cmd === "sys")
+    out.innerHTML += navigator.userAgent + "<br>";
+
+  else
+    out.innerHTML += "Unknown command<br>";
+
+  out.scrollTop = out.scrollHeight;
 }

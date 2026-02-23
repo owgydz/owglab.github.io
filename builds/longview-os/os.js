@@ -1,59 +1,41 @@
 let highestZ = 10;
-let windows = [];
 
-function launchApp(appName) {
-  const content = window[appName + "App"]();
-  createWindow(appName, content);
+function launchApp(name) {
+  const content = window[name + "App"]();
+  createWindow(name, content);
 }
 
 function createWindow(title, content) {
   const win = document.createElement("div");
   win.className = "window";
-  win.dataset.title = title;
-  win.style.left = 100 + Math.random() * 100 + "px";
-  win.style.top = 80 + Math.random() * 80 + "px";
+  win.style.left = 100 + Math.random()*200 + "px";
+  win.style.top = 80 + Math.random()*150 + "px";
   win.style.zIndex = highestZ++;
 
   win.innerHTML = `
     <div class="window-header">
-      <span>${title}</span>
-      <div>
-        <button onclick="minimizeWindow(this)">_</button>
-        <button onclick="closeWindow(this)">X</button>
-      </div>
+      <div class="traffic-btn red" onclick="closeWindow(this)"></div>
+      <div class="traffic-btn yellow" onclick="minimizeWindow(this)"></div>
+      <div class="traffic-btn green" onclick="focusWindow(this.closest('.window'))"></div>
+      <span style="margin-left:10px;color:white;">${title}</span>
     </div>
     <div class="window-body">${content}</div>
   `;
 
   makeDraggable(win);
-  focusWindow(win);
-
   document.getElementById("desktop").appendChild(win);
-  windows.push(win);
+}
 
-  updateTaskManager();
+function closeWindow(btn) {
+  btn.closest(".window").remove();
+}
+
+function minimizeWindow(btn) {
+  btn.closest(".window").style.display = "none";
 }
 
 function focusWindow(win) {
   win.style.zIndex = highestZ++;
-}
-
-function closeWindow(btn) {
-  const win = btn.closest(".window");
-  win.remove();
-  windows = windows.filter(w => w !== win);
-  updateTaskManager();
-}
-
-function minimizeWindow(btn) {
-  const win = btn.closest(".window");
-  win.style.display = "none";
-  updateTaskManager();
-}
-
-function restoreWindow(win) {
-  win.style.display = "block";
-  focusWindow(win);
 }
 
 function makeDraggable(win) {

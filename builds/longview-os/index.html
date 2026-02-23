@@ -2,45 +2,37 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>LongviewOS v0.60</title>
+  <title>LongviewOS 1.0.0</title>
   <link rel="stylesheet" href="os.css">
-  <link rel="stylesheet" href="../../Woah.css">
 </head>
 <body>
 
-<div class="container">
+<div id="desktop"></div>
 
-  <div class="panel header">
-    <h1>LongviewOS v0.60</h1>
-    <a href="../../index.html">← Back</a>
-  </div>
-
-  <div id="desktop">
-
-    <div id="menu-bar">
-      <button onclick="toggleAppMenu()">Apps</button>
-      <div id="app-menu" class="hidden">
-        <div onclick="launchApp('files')">Files</div>
-        <div onclick="launchApp('editor')">Editor</div>
-        <div onclick="launchApp('terminal')">Terminal</div>
-        <div onclick="launchApp('taskmanager')">Task Manager</div>
-        <div onclick="launchApp('about')">About</div>
-      </div>
-    </div>
-
-    <div id="minimized-tray"></div>
-
-  </div>
-
+<!-- Dock -->
+<div id="dock">
+  <div class="dock-item" onclick="launchApp('files')">📁</div>
+  <div class="dock-item" onclick="launchApp('browser')">🌐</div>
+  <div class="dock-item" onclick="launchApp('notes')">📝</div>
+  <div class="dock-item" onclick="launchApp('system')">📊</div>
+  <div class="dock-item" onclick="launchApp('settings')">⚙</div>
+  <div class="dock-item" onclick="launchApp('about')">❓</div>
+  <div class="dock-item" onclick="launchApp('calc')">🧮</div>
+  <div class="dock-item" onclick="launchApp('terminal')">💻</div>
+  <div class="dock-item" onclick="launchApp('task manager')">⚙</div>
 </div>
 
 <script src="os.js"></script>
-<script src="state.js"></script>
 <script src="apps/files.js"></script>
-<script src="apps/editor.js"></script>
-<script src="apps/taskmanager.js"></script>
-<script src="apps/terminal.js"></script>
+<script src="apps/notes.js"></script>
+<script src="apps/browser.js"></script>
+<script src="apps/system.js"></script>
+<script src="apps/settings.js"></script>
 <script src="apps/about.js"></script>
+<script src="apps/calc.js"></script>
+<script src="apps/terminal.js"></script>
+<script src="apps/taskmanager.js"></script>
+
 
 </body>
 </html>
